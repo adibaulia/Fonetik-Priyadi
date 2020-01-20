@@ -1,6 +1,7 @@
 package priyadi
 
 import (
+	"log"
 	"regexp"
 	"strings"
 )
@@ -11,6 +12,8 @@ func Encode(s string) string {
 	}
 	s = strings.ToLower(s)
 	s = DiftongNormalize(s, `[^a-z]`, ``)
+	log.Print(s)
+	log.Print(len(s))
 	/* 1. Ubah ejaan lama menjadi ejaan baru: ubah oe menjadi u, tj
 	   menjadi c, dj menjadi j. Untuk menghindari false positive,
 	   jangan ubah j menjadi y kecuali jika ada pengubahan ejaan
@@ -96,16 +99,20 @@ func SemiVocalNormalize(s string) string {
 }
 
 func DeadHRemoval(s string) string {
-
 	for i := 0; i < len(s); i++ {
-		index := string([]rune(s)[i])
-		if index == "h" && i+1 < len(s) && i-1 > len(s) {
-			consonant := string([]rune(s)[i-1])
-			vocal := string([]rune(s)[i+1])
-			syllable := string([]rune(s)[i-1 : i+2])
-			if strings.ContainsAny(consonant, "cbdgfhkjmlnqpsrtwvyxz") && strings.ContainsAny(vocal, "aiueo") {
-				new := strings.ReplaceAll(syllable, "h", "")
-				s = strings.ReplaceAll(s, syllable, new)
+		if i+3 < len(s) {
+			if syllable := string([]rune(s)[i : i+3]); strings.ContainsAny(syllable, "h") && len(syllable) == 3 {
+				hIndex := strings.IndexAny(syllable, "h")
+				if hIndex-1 == -1 || hIndex+1 == 3 {
+				} else {
+					consonant := string([]rune(syllable)[hIndex-1])
+					vocal := string([]rune(syllable)[hIndex+1])
+					if strings.ContainsAny(consonant, "cbdgfhkjmlnqpsrtwvyxz") && strings.ContainsAny(vocal, "aiueo") {
+						new := strings.ReplaceAll(syllable, "h", "")
+						s = strings.ReplaceAll(s, syllable, new)
+
+					}
+				}
 			}
 		}
 	}
