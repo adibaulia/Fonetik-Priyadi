@@ -1,7 +1,6 @@
 package priyadi
 
 import (
-	"log"
 	"regexp"
 	"strings"
 )
@@ -12,8 +11,6 @@ func Encode(s string) string {
 	}
 	s = strings.ToLower(s)
 	s = DiftongNormalize(s, `[^a-z]`, ``)
-	log.Print(s)
-	log.Print(len(s))
 	/* 1. Ubah ejaan lama menjadi ejaan baru: ubah oe menjadi u, tj
 	   menjadi c, dj menjadi j. Untuk menghindari false positive,
 	   jangan ubah j menjadi y kecuali jika ada pengubahan ejaan
@@ -110,7 +107,6 @@ func DeadHRemoval(s string) string {
 					if strings.ContainsAny(consonant, "cbdgfhkjmlnqpsrtwvyxz") && strings.ContainsAny(vocal, "aiueo") {
 						new := strings.ReplaceAll(syllable, "h", "")
 						s = strings.ReplaceAll(s, syllable, new)
-
 					}
 				}
 			}
